@@ -150,3 +150,21 @@
 	
 		then restart psad:
 		sudo service psad restart
+
+7. Stopping unneeded services
+		scan all enabled services:
+		`sudo systemctl list-unit-files --type=service --state=enabled --all`
+	
+		for this project we need:
+		apache2
+		cron
+		fail2ban
+		getty
+		networking
+		ssh
+		ufw
+	
+		stopping unnecessary services:
+		sudo systemctl disable [service name]
+	
+8. 
