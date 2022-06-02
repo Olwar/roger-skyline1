@@ -53,5 +53,85 @@
 		ping seraphinabot.dev
 		
 3. configuring SSH
+		Let's modify /etc/ssh/sshd_config (change perms before and after):
+		Port <port that is not in use> (can be checked with cat /etc/services)
+		PasswordAuthentication no
+		PubkeyAuthentication yes
+		PermitRootLogin no
 		
+		then restart sshd for the effects to come into action:
+		sudo service sshd restart
+	
+		then copy your host machine public SSH key to the VM:
+		ssh-copy-id -i [path to public key] [username]@[static ip of vm] -p [ssh port of vm]
+	
+4. configuring firewall
+		Let's install easy-to-use firewall ufw (uncomplicated firewall)
+		sudo apt install ufw
+	
+		then deny all incoming connections and allow all outgoing connection so we can specifically only allow the ones we want:
+		sudo ufw default deny incoming
+		sudo ufw default allow outgoing
+	
+		we will allow SSH, HTTP and HTTPS (so we can connect to the VM and the internet works)
+		sudo ufw allow 50000/tcp
+		sudo ufw allow 80/tcp
+		sudo ufw allow 443/tcp
 		
+		tcp enables application programs and computing devices to exchange messages over a network. It is designed to send packets across the 			internet and ensure the successful delivery of data and messages over networks.
+	
+		then we will enable the firewall and see if it's working:
+		sudo ufw enable
+		sudo ufw status
+		
+5. DOS protection
+		Install fail2ban. Fail2ban is an intrusion prevention software framework that protects computer servers from brute-force attacks.
+		sudo apt install fail2ban
+	
+		then we will copy configuration file jail.conf in /etc/fail2ban
+		sudo cp jail.conf jail.local
+		why do we do this? Every .conf file can be overridden with a file named .local. The .conf file is read first, then .local, with later 			settings overriding earlier ones. Thus, a .local file doesn't have to include everything in the corresponding .conf file, only those 			settings that you wish to override. Modifications should take place in the .local and not in the .conf. This avoids merging problem 			when upgrading. These files are well documented and detailed information should be available there.
+	
+		then edit the jail.local:
+		#
+		# SSH servers
+		#
+
+		[sshd]
+
+		# To use more aggressive sshd modes set filter parameter "mode" in jail.local:
+		# normal (default), ddos, extra or aggressive (combines all).
+		# See "tests/files/logs/sshd" or "filter.d/sshd.conf" for usage example and details.
+		mode   = agressive
+		enabled = true
+		port    = ssh
+		logpath = %(sshd_log)s
+		backend = %(sshd_backend)s
+		maxentry = 3
+		bantime = 600
+	
+		and the HTTP and HTTPS:
+		# Protect HTTP and HTTPS (HTTP)
+
+		[http-get-dos]
+
+		enabled = true
+		port = http,https
+		filter = http-get-dos
+		logpath = /var/log/apache2/access.log
+		maxentry = 300
+		findtime = 300
+		bantime = 600
+		action = iptables[name=HTTP, port=http, protocol=tcp]
+	
+		then we actually need to define that filter http-get-dos that we just specified. We can do this in a file /etc/fail2ban/filter.d/http-			get-dos.conf. Create it.
+		Add this in there:
+		[Definition]
+
+		failregex = ^<HOST> -.*"GET.*
+		ignoreregex =
+	
+		this will just make sure that we actually ban every ip that tries to connect too often.
+		test your protection with https://github.com/gkbrk/slowloris
+	
+6. 
