@@ -134,4 +134,19 @@
 		this will just make sure that we actually ban every ip that tries to connect too often.
 		test your protection with https://github.com/gkbrk/slowloris
 	
-6. 
+6. Port scan protection
+		Let's install psad. psad is a collection of three lightweight system daemons (two main daemons and one helper daemon) that run on Linux 		machines and analyze iptables log messages to detect port scans and other suspicious traffic. A daemon = a service process that runs in 		the background and supervises the system or provides functionality to other processes.
+		`sudo apt install psad`
+	
+		configure psad by editing /etc/psad/psad.conf :
+		EMAIL_ADDRESSES			root@debian.lan; #email to notify
+		HOSTNAME			debian;
+		PORT_RANGE_SCAN_THRESHOLD	1; #how many ports minimum must be scanned for an alert
+		IPT_SYSLOG_FILE			/var/log/syslog; #where psad looks for active logs
+		MIN_DANGER_LEVEL		1; #what level should be reached for an email to be sent
+		ENABLE_AUTO_IDS			Y; #if this is Y, psad can automatically configure your firewall to block certain addresses
+		AUTO_IDS_DANGER_LEVEL		1; #what danger level is reached for an ip to be banned
+		AUTO_BLOCK_TIMEOUT		300; #how long is the ban
+	
+		then restart psad:
+		sudo service psad restart
