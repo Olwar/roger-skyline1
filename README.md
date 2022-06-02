@@ -170,6 +170,7 @@
 8. Package update script
 		do a script in /user/local/bin (change the permissions before and after)
 		this is what i put there:
+	
 		#!/bin/sh
 		echo "[`date`] sudo apt update -y" >> /var/log/update_script.log
 		echo "`sudo apt update -y`" >> /var/log/update_script.log
