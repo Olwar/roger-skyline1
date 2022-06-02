@@ -167,4 +167,18 @@
 		stopping unnecessary services:
 		sudo systemctl disable [service name]
 	
-8. 
+8. Package update script
+		do a script in /user/local/bin (change the permissions before and after)
+		this is what i put there:
+		#!/bin/sh
+		echo "[`date`] sudo apt update -y" >> /var/log/update_script.log
+		echo "`sudo apt update -y`" >> /var/log/update_script.log
+		echo "[`date`] sudo apt upgrade -y" >> /var/log/update_script.log
+		echo "`sudo apt upgrade -y`" >> /var/log/update_script.log
+	
+		then let's add a scheduling task in your crontab file:
+		`crontab -e`
+	
+		@reboot sh /usr/local/bin/package_update.sh &
+		0 4 * * 1 sh /usr/local/bin/package_update.sh &
+
