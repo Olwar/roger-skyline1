@@ -180,6 +180,7 @@
 		then let's add a scheduling task in your crontab file:
 		`crontab -e`
 	
+		and add the lines:
 		@reboot sh /usr/local/bin/package_update.sh &
 		0 4 * * 1 sh /usr/local/bin/package_update.sh &
 
