@@ -242,7 +242,7 @@ Then to the web part!
 	
 		eval form says that nginx can't listen to the localhost. So let's se change in /etc/nginx/sites-enables the listen [::]:80 to <your-static-ip>:80 e.g. 10.11.247.17:80 and remove listen 80 default_server;
 	
-		
+		allright then we will create a self-signed SSL certificate with this guide: https://www.digitalocean.com/community/tutorials/how-to-create-a-self-signed-ssl-certificate-for-nginx-on-debian-10
 
 		
 	
