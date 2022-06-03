@@ -221,6 +221,30 @@ root if it has been modified. Create a scheduled script task every day at midnig
 		in postfix installation choose local only and set the system mail name to debian.lan
 	
 		change root: to root: root@debian.lan in /etc/aliases and run `sudo newaliases` for the effects to come into effect.
+		when logged in as root, you can do `mailx` to see the e-mails
+	
+	
+Then to the web part!
+		You have to set a web server who should BE available on the VM’s IP or an host
+		(init.login.com for exemple). About the packages of your web server, you can choose
+		between Nginx and Apache. You have to set a self-signed SSL on all of your services.
+		You have to set a web "application" from those choices:
+		• A login page.
+		• A display site.
+		• A wonderful website that blow our minds.
+		The web-app COULD be written with any language you want
+
+		Okay so, for this we can choose between nginx or apache. I'm gonna choose nginx and follow this guide https://medium.com/adrixus/beginners-guide-to-nginx-configuration-files-527fcd6d5efd:
+		sudo apt-get update
+		sudo apt-get install nginx
+	
+		nginx puts a default website in /var/www/html and you can replace that with your own html file.
+	
+		eval form says that nginx can't listen to the localhost. So let's se change in /etc/nginx/sites-enables the listen [::]:80 to <your-static-ip>:80 e.g. 10.11.247.17:80 and remove listen 80 default_server;
 	
 		
+
+		
+	
+	
 		
