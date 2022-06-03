@@ -139,7 +139,7 @@
 		`sudo apt install psad`
 	
 		configure psad by editing /etc/psad/psad.conf :
-		EMAIL_ADDRESSES			root@debian.lan; #email to notify
+		EMAIL_ADDRESSES			root@debian.lan; #email to notify, will be configured later
 		HOSTNAME			debian;
 		PORT_RANGE_SCAN_THRESHOLD	1; #how many ports minimum must be scanned for an alert
 		IPT_SYSLOG_FILE			/var/log/syslog; #where psad looks for active logs
@@ -184,3 +184,43 @@
 		@reboot sh /usr/local/bin/package_update.sh &
 		0 4 * * 1 sh /usr/local/bin/package_update.sh &
 
+9. Make a script to monitor changes of the /etc/crontab file and sends an email to
+root if it has been modified. Create a scheduled script task every day at midnight.
+
+		Make the script in /usr/local/bin/
+
+		#!/bin/sh
+
+		CRONTAB=/var/spool/cron/crontabs/root
+		BACKUP=/var/spool/cron/crontabs/backup
+
+		echo 'checking if changes in crontab...'
+
+		if [ ! -e $BACKUP ]
+		then
+			echo 'backuping crontab...'
+			cp $CRONTAB $BACKUP
+		fi
+
+		DIFF=$(diff $CRONTAB $BACKUP)
+
+		if [ $? -eq 0 ]
+		then
+			:
+		else
+			echo "crontab's been changed" | mail -s "crontab change" root@debian.lan
+		fi
+
+		cp $CRONTAB $BACKUP
+	
+		edit your crontab to schedule the task:
+		0 0 * * * sh /usr/local/bin/monitor_crontab.sh &
+		
+		install mailutils and postfix to configure e-mail:
+		`sudo apt install mailutils postfix`
+		in postfix installation choose local only and set the system mail name to debian.lan
+	
+		change root: to root: root@debian.lan in /etc/aliases and run `sudo newaliases` for the effects to come into effect.
+	
+		
+		
