@@ -335,3 +335,7 @@ Allright then we will create a self-signed SSL certificate
 		restart nginx `sudo systemctl restart nginx`
 	
 		then finally if everything is good change the 302 to 301 in the /etc/nginx/sites-available/default, this makes the redirect permanent.
+	
+All right people, it's time for the final stage which is deployment automation. For this I will create a simple script.
+	
+		You can see it in deploy.sh
