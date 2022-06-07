@@ -242,9 +242,96 @@ Then to the web part!
 	
 		eval form says that nginx can't listen to the localhost. So let's se change in /etc/nginx/sites-enables the listen [::]:80 to <your-static-ip>:80 e.g. 10.11.247.17:80 and remove listen 80 default_server;
 	
-		allright then we will create a self-signed SSL certificate with this guide: https://www.digitalocean.com/community/tutorials/how-to-create-a-self-signed-ssl-certificate-for-nginx-on-debian-10
+Allright then we will create a self-signed SSL certificate
+	
+		I used this guide: https://www.digitalocean.com/community/tutorials/how-to-create-a-self-signed-ssl-certificate-for-nginx-on-debian-10
 
-		
+		TLS, or transport layer security, and its predecessor SSL, which stands for secure sockets layer, are web protocols used to wrap normal 		traffic in a protected, encrypted wrapper. Using this technology, servers can send traffic safely between the server and clients 		without the possibility of the messages being intercepted by outside parties.
 	
-	
+		Creating an SSL certificate and key -pair can be done in one line.
+
+		`sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/ssl/private/nginx-selfsigned.key -out /etc/ssl/certs/nginx-		selfsigned.crt`
 		
+		openssl: This is the basic command line tool for creating and managing OpenSSL certificates, keys, and other files.
+		req: This subcommand specifies that we want to use X.509 certificate signing request (CSR) management. The “X.509” is a public key 			infrastructure standard that SSL and TLS adheres to for its key and certificate management. We want to create a new X.509 cert, so 			we are using this subcommand.
+		-x509: This further modifies the previous subcommand by telling the utility that we want to make a self-signed certificate instead of 			generating a certificate signing request, as would normally happen.
+		-nodes: This tells OpenSSL to skip the option to secure our certificate with a passphrase. We need Nginx to be able to read the file 			without user intervention when the server starts up. A passphrase would prevent this from happening because we would have to enter 			it after every restart.
+		-days 365: This option sets the length of time that the certificate will be considered valid. We set it for one year here.
+		-newkey rsa:2048: This specifies that we want to generate a new certificate and a new key at the same time. We did not create the key 			that is required to sign the certificate in a previous step, so we need to create it along with the certificate. The rsa:2048 portion 			tells it to make an RSA key that is 2048 bits long.
+		-keyout: This line tells OpenSSL where to place the generated private key file that we are creating.
+		-out: This tells OpenSSL where to place the certificate that we are creating.
+	
+		Fill out the prompts appropriately. The most important line is the one that requests the Common Name (e.g. server FQDN or YOUR name). 			You need to enter the domain name associated with your server or your server’s public IP address.
+	
+		then we are going to add "forward secrecy". Forward secrecy protects past sessions against future compromises of keys or passwords. By 			generating a unique session key for every session a user initiates, the compromise of a single session key will not affect any data 			other than that exchanged in the specific session protected by that particular key.
+		
+		`sudo openssl dhparam -out /etc/nginx/dhparam.pem 4096`
+	
+		then we need to configure Nginx to use SSL
+	
+		Let's create a new configuration Nginx snippet to tell Nginx where SSL certificate and key are
+		`sudo vim /etc/nginx/snippets/self-signed.conf`
+	
+		ssl_certificate /etc/ssl/certs/nginx-selfsigned.crt;
+		ssl_certificate_key /etc/ssl/private/nginx-selfsigned.key;
+	
+		Then we will enhance our SSL's security with another conf snippet
+		`sudo vim /etc/nginx/snippets/ssl-params.conf`
+	
+		copy this there:
+		ssl_protocols TLSv1.2;
+		ssl_prefer_server_ciphers on;
+		ssl_dhparam /etc/nginx/dhparam.pem;
+		ssl_ciphers ECDHE-RSA-AES256-GCM-SHA512:DHE-RSA-AES256-GCM-SHA512:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-			AES256-SHA384;
+		ssl_ecdh_curve secp384r1; # Requires nginx >= 1.1.0
+		ssl_session_timeout  10m;
+		ssl_session_cache shared:SSL:10m;
+		ssl_session_tickets off; # Requires nginx >= 1.5.9
+		ssl_stapling on; # Requires nginx >= 1.3.7
+		ssl_stapling_verify on; # Requires nginx => 1.3.7
+		resolver 8.8.8.8 8.8.4.4 valid=300s;
+		resolver_timeout 5s;
+		# Disable strict transport security for now. You can uncomment the following
+		# line if you understand the implications.
+		# add_header Strict-Transport-Security "max-age=63072000; includeSubDomains; preload";
+		add_header X-Frame-Options DENY;
+		add_header X-Content-Type-Options nosniff;
+		add_header X-XSS-Protection "1; mode=block";
+	
+		for DNS resolver for upstream requests we chose Google's ip. Meaning that if somebody wants to see what's "after" our server, it gets redirected to google.
+		the lines commented out protects from certain attacks but narrows usability.
+	
+		Now let's enable SSL in Nginx
+	
+		backup your default nginx-conf sudo cp /etc/nginx/sites-available/default /etc/nginx/sites-available/default.bak
+	
+		we will modify that default file. We will modify the existing server block to serve SSL traffic on port 443, and then create a new server block to respond on port 80 and automatically redirect traffic to port 443.
+	
+		so change listen <your-static-ip>:80 default_server; to  
+		listen 10.11.247.17:443 ssl;
+	   	include snippets/self-signed.conf;
+  		include snippets/ssl-params.conf;
+	
+		then add another block after the closing }
+	
+		server {
+		    listen <your-static-ip>:80;
+
+		    server_name _;
+
+		    return 302 https://10.11.247.17;
+		}
+	
+		this redirects the traffic from port 80 to HTTPS.
+	
+		next we will adjust the firewall to allow SSL traffic:
+		sudo ufw allow 'Nginx Full'
+	
+		then run `sudo nginx -t` to see that you have correct syntax in your nginx -files. this is what you should see:
+		nginx: [warn] "ssl_stapling" ignored, issuer certificate not found for certificate "/etc/ssl/certs/nginx-selfsigned.crt"
+		nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
+		nginx: configuration file /etc/nginx/nginx.conf test is successful
+	
+		restart nginx `sudo systemctl restart nginx`
+	
+		then finally if everything is good change the 302 to 301 in the /etc/nginx/sites-available/default, this makes the redirect permanent.
