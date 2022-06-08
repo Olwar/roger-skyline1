@@ -2,7 +2,6 @@
  Configuring a web server on Virtual Machine
 
 1. You must create a non-root user to connect to the machine and work.
-
 	login as root
 		su
 
@@ -25,7 +24,6 @@
 		exit
 
 2. configuring a static IP and a Netmask in \30 because you don't want to use DHCP service of your machine (DHCP assigns ip-addresses but we want to do it our selves).
-		
 	change the VM adapter setting from NAT to Bridged Adapter on VirtualBox or whatever hypervisor you're using.
 	modify your /etc/network/interface -file, to add your network interface device:
 		# The primary network interface
