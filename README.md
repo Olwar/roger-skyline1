@@ -12,7 +12,7 @@
 		apt install sudo -y
 		apt install vim -y
 		
-		**edit sudoers file**
+	edit sudoers file
 		cd /etc
 		chmod +w sudoers
 		vim sudoers
