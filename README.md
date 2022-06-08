@@ -178,11 +178,12 @@
 		echo "`sudo apt upgrade -y`" >> /var/log/update_script.log
 	
 		then let's add a scheduling task in your crontab file:
-		`crontab -e`
+		`sudo vim /etc/crontab`
 	
 		and add the lines:
-		@reboot sh /usr/local/bin/package_update.sh &
-		0 4 * * 1 sh /usr/local/bin/package_update.sh &
+		@reboot		root sh /usr/local/bin/package_update.sh &
+		0 4 * * 1 	root sh /usr/local/bin/package_update.sh &
+		0 0 * * *	root sh /usr/local/bin/monitor_crontab.sh &
 
 9. Make a script to monitor changes of the /etc/crontab file and sends an email to
 root if it has been modified. Create a scheduled script task every day at midnight.
