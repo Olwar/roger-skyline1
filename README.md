@@ -66,6 +66,10 @@
 	
 		sudo apt install vim net-tools -y
 	
+	copy your host machine public SSH key to the VM:
+	
+		ssh-copy-id -i [path to public key] [username]@[static ip of vm] -p [ssh port of vm]
+	
 	Let's modify /etc/ssh/sshd_config (change perms before and after):
 	
 		Port <port that is not in use> #(can be checked with cat /etc/services)
@@ -76,10 +80,6 @@
 	then restart sshd for the effects to come into action:
 	
 		sudo service sshd restart
-	
-	then copy your host machine public SSH key to the VM:
-	
-		ssh-copy-id -i [path to public key] [username]@[static ip of vm] -p [ssh port of vm]
 	
 4. configuring firewall
 	Let's install easy-to-use firewall ufw (uncomplicated firewall)
