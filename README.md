@@ -275,15 +275,16 @@ Then to the web part!
 	
 	nginx puts a default website in /var/www/html and you can replace that with your own html file.
 	
-	eval form says that nginx can't listen to the localhost. So let's se change in /etc/nginx/sites-enables the listen [::]:80 to <your-static-ip>:80 e.g. 10.11.247.17:80 and remove listen 80 default_server;
+eval form says that nginx can't listen to the localhost. 
+	So let's se change in /etc/nginx/sites-enables the listen [::]:80 to <your-static-ip>:80 e.g. 10.11.247.17:80 and remove listen 80 default_server;
 	
 Allright then we will create a self-signed SSL certificate
 	
-	I used this guide: https://www.digitalocean.com/community/tutorials/how-to-create-a-self-signed-ssl-certificate-for-nginx-on-debian-10
+I used this guide: https://www.digitalocean.com/community/tutorials/how-to-create-a-self-signed-ssl-certificate-for-nginx-on-debian-10
 
-	TLS, or transport layer security, and its predecessor SSL, which stands for secure sockets layer, are web protocols used to wrap normal 		traffic in a protected, encrypted wrapper. Using this technology, servers can send traffic safely between the server and clients 		without the possibility of the messages being intercepted by outside parties.
+TLS, or transport layer security, and its predecessor SSL, which stands for secure sockets layer, are web protocols used to wrap normal traffic in a protected, encrypted wrapper. Using this technology, servers can send traffic safely between the server and clients without the possibility of the messages being intercepted by outside parties.
 	
-	Creating an SSL certificate and key -pair can be done in one line.
+Creating an SSL certificate and key -pair can be done in one line.
 
 		`sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/ssl/private/nginx-selfsigned.key -out /etc/ssl/certs/nginx-		selfsigned.crt`
 
