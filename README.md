@@ -229,7 +229,7 @@ root if it has been modified. Create a scheduled script task every day at midnig
 
 		#!/bin/sh
 
-		CRONTAB=/var/spool/cron/crontabs/root
+		CRONTAB=/etc/crontab
 		BACKUP=/var/spool/cron/crontabs/backup
 
 		echo 'checking if changes in crontab...'
