@@ -156,11 +156,13 @@
 	test your protection with https://github.com/gkbrk/slowloris
 	
 6. Port scan protection
-7. 
-	Let's install psad. psad is a collection of three lightweight system daemons (two main daemons and one helper daemon) that run on Linux machines and analyze iptables log messages to detect port scans and other suspicious traffic. A daemon = a service process that runs in the background and supervises the system or provides functionality to other processes.
+
+	Let's install psad. psad is a collection of three lightweight system daemons (two main daemons and one helper daemon) that run on Linux 	machines and analyze iptables log messages to detect port scans and other suspicious traffic. A daemon = a service process that runs in the 		background and supervises the system or provides functionality to other processes.
+	
 		`sudo apt install psad`
 	
 	configure psad by editing /etc/psad/psad.conf :
+	
 		EMAIL_ADDRESSES			root@debian.lan; #email to notify, will be configured later
 		HOSTNAME			debian;
 		PORT_RANGE_SCAN_THRESHOLD	1; #how many ports minimum must be scanned for an alert
@@ -171,6 +173,7 @@
 		AUTO_BLOCK_TIMEOUT		300; #how long is the ban
 	
 	then restart psad:
+	
 		sudo service psad restart
 
 7. Stopping unneeded services
@@ -212,7 +215,6 @@
 	
 		@reboot		root sh /usr/local/bin/package_update.sh &
 		0 4 * * 1 	root sh /usr/local/bin/package_update.sh &
-		0 0 * * *	root sh /usr/local/bin/monitor_crontab.sh &
 
 9. Make a script to monitor changes of the /etc/crontab file and sends an email to
 root if it has been modified. Create a scheduled script task every day at midnight.
@@ -243,7 +245,8 @@ root if it has been modified. Create a scheduled script task every day at midnig
 
 		cp $CRONTAB $BACKUP
 	
-	edit your crontab to schedule the task:
+	edit your /etc/crontab to schedule the task:
+
 		0 0 * * * sh /usr/local/bin/monitor_crontab.sh &
 		
 	install mailutils and postfix to configure e-mail:
