@@ -292,7 +292,7 @@ TLS, or transport layer security, and its predecessor SSL, which stands for secu
 	
 Creating an SSL certificate and key -pair can be done in one line.
 
-		sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/ssl/private/nginx-selfsigned.key -out /etc/ssl/certs/nginx-		selfsigned.crt
+	sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/ssl/private/nginx-selfsigned.key -out /etc/ssl/certs/nginx-selfsigned.crt
 
 
 	openssl: This is the basic command line tool for creating and managing OpenSSL certificates, keys, and other files.
