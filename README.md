@@ -174,10 +174,13 @@
 		sudo service psad restart
 
 7. Stopping unneeded services
+
 	scan all enabled services:
+	
 		`sudo systemctl list-unit-files --type=service --state=enabled --all`
 	
 	for this project we need:
+	
 		apache2
 		cron
 		fail2ban
@@ -187,9 +190,11 @@
 		ufw
 	
 	stopping unnecessary services:
+	
 		sudo systemctl disable [service name]
 	
 8. Package update script
+
 	do a script in /user/local/bin (change the permissions before and after)
 	this is what i put there:
 	
@@ -200,9 +205,11 @@
 		echo "`sudo apt upgrade -y`" >> /var/log/update_script.log
 	
 	then let's add a scheduling task in your crontab file:
+	
 		`sudo vim /etc/crontab`
 	
 	and add the lines:
+	
 		@reboot		root sh /usr/local/bin/package_update.sh &
 		0 4 * * 1 	root sh /usr/local/bin/package_update.sh &
 		0 0 * * *	root sh /usr/local/bin/monitor_crontab.sh &
@@ -248,6 +255,7 @@ root if it has been modified. Create a scheduled script task every day at midnig
 	
 	
 Then to the web part!
+
 	You have to set a web server who should BE available on the VM’s IP or an host
 	(init.login.com for exemple). About the packages of your web server, you can choose
 	between Nginx and Apache. You have to set a self-signed SSL on all of your services.
@@ -258,6 +266,7 @@ Then to the web part!
 	The web-app COULD be written with any language you want
 
 	Okay so, for this we can choose between nginx or apache. I'm gonna choose nginx and follow this guide https://medium.com/adrixus/beginners-guide-to-nginx-configuration-files-527fcd6d5efd:
+	
 		sudo apt-get update
 		sudo apt-get install nginx
 	
@@ -293,15 +302,20 @@ Allright then we will create a self-signed SSL certificate
 	then we need to configure Nginx to use SSL
 	
 	Let's create a new configuration Nginx snippet to tell Nginx where SSL certificate and key are
+	
 		`sudo vim /etc/nginx/snippets/self-signed.conf`
+		
 	add this there:
+	
 		ssl_certificate /etc/ssl/certs/nginx-selfsigned.crt;
 		ssl_certificate_key /etc/ssl/private/nginx-selfsigned.key;
 	
 	Then we will enhance our SSL's security with another conf snippet
+	
 		`sudo vim /etc/nginx/snippets/ssl-params.conf`
 	
 	copy this there:
+	
 		ssl_protocols TLSv1.2;
 		ssl_prefer_server_ciphers on;
 		ssl_dhparam /etc/nginx/dhparam.pem;
@@ -326,11 +340,12 @@ Allright then we will create a self-signed SSL certificate
 	
 	Now let's enable SSL in Nginx
 	
-	backup your default nginx-conf sudo cp /etc/nginx/sites-available/default /etc/nginx/sites-available/default.bak
+	backup your default nginx-conf `sudo cp /etc/nginx/sites-available/default /etc/nginx/sites-available/default.bak`
 	
 	we will modify that default file. We will modify the existing server block to serve SSL traffic on port 443, and then create a new server block to respond on port 80 and automatically redirect traffic to port 443.
 	
-	so change listen <your-static-ip>:80 default_server; to  
+	so change listen <your-static-ip>:80 default_server; to
+	
 		listen 10.11.247.17:443 ssl;
 	   	include snippets/self-signed.conf;
   		include snippets/ssl-params.conf;
@@ -348,9 +363,11 @@ Allright then we will create a self-signed SSL certificate
 	this redirects the traffic from port 80 to HTTPS.
 	
 	next we will adjust the firewall to allow SSL traffic:
+	
 		sudo ufw allow 'Nginx Full'
 	
 	then run `sudo nginx -t` to see that you have correct syntax in your nginx -files. this is what you should see:
+	
 		nginx: [warn] "ssl_stapling" ignored, issuer certificate not found for certificate "/etc/ssl/certs/nginx-selfsigned.crt"
 		nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
 		nginx: configuration file /etc/nginx/nginx.conf test is successful
