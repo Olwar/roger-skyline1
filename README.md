@@ -315,8 +315,8 @@ then we are going to add "forward secrecy". Forward secrecy protects past sessio
 then we need to configure Nginx to use SSL
 	
 Let's create a new configuration Nginx snippet to tell Nginx where SSL certificate and key are
-	
-		`sudo vim /etc/nginx/snippets/self-signed.conf`
+
+		sudo vim /etc/nginx/snippets/self-signed.conf
 		
 add this there:
 	
