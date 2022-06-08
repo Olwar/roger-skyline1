@@ -61,6 +61,11 @@
 		ping seraphinabot.dev
 		
 3. configuring SSH
+
+	install net-tools
+	
+		sudo apt install vim net-tools -y
+	
 	Let's modify /etc/ssh/sshd_config (change perms before and after):
 	
 		Port <port that is not in use> #(can be checked with cat /etc/services)
