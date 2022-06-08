@@ -367,13 +367,13 @@ then add another block after the closing }
 		    return 302 https://10.11.247.17;
 		}
 	
-	this redirects the traffic from port 80 to HTTPS.
+this redirects the traffic from port 80 to HTTPS.
 	
-	next we will adjust the firewall to allow SSL traffic:
+next we will adjust the firewall to allow SSL traffic:
 	
 		sudo ufw allow 'Nginx Full'
 	
-	then run `sudo nginx -t` to see that you have correct syntax in your nginx -files. this is what you should see:
+then run `sudo nginx -t` to see that you have correct syntax in your nginx -files. this is what you should see:
 	
 		nginx: [warn] "ssl_stapling" ignored, issuer certificate not found for certificate "/etc/ssl/certs/nginx-selfsigned.crt"
 		nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
@@ -381,7 +381,7 @@ then add another block after the closing }
 	
 	restart nginx `sudo systemctl restart nginx`
 	
-	then finally if everything is good change the 302 to 301 in the /etc/nginx/sites-available/default, this makes the redirect permanent.
+then finally if everything is good change the 302 to 301 in the /etc/nginx/sites-available/default, this makes the redirect permanent.
 	
 All right people, it's time for the final stage which is deployment automation. For this I will create a simple script.
 	
