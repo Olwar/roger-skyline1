@@ -292,7 +292,7 @@ TLS, or transport layer security, and its predecessor SSL, which stands for secu
 	
 Creating an SSL certificate and key -pair can be done in one line.
 
-		`sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/ssl/private/nginx-selfsigned.key -out /etc/ssl/certs/nginx-		selfsigned.crt`
+		sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/ssl/private/nginx-selfsigned.key -out /etc/ssl/certs/nginx-		selfsigned.crt
 
 
 	openssl: This is the basic command line tool for creating and managing OpenSSL certificates, keys, and other files.
@@ -310,7 +310,7 @@ Fill out the prompts appropriately. The most important line is the one that requ
 
 then we are going to add "forward secrecy". Forward secrecy protects past sessions against future compromises of keys or passwords. By generating a unique session key for every session a user initiates, the compromise of a single session key will not affect any data other than that exchanged in the specific session protected by that particular key.
 		
-		`sudo openssl dhparam -out /etc/nginx/dhparam.pem 4096`
+		sudo openssl dhparam -out /etc/nginx/dhparam.pem 4096
 	
 then we need to configure Nginx to use SSL
 	
@@ -325,7 +325,7 @@ add this there:
 	
 Then we will enhance our SSL's security with another conf snippet
 	
-		`sudo vim /etc/nginx/snippets/ssl-params.conf`
+		sudo vim /etc/nginx/snippets/ssl-params.conf
 	
 copy this there:
 	
