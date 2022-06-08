@@ -100,6 +100,7 @@
 	tcp enables application programs and computing devices to exchange messages over a network. It is designed to send packets across the internet and ensure the successful delivery of data and messages over networks.
 	
 	then we will enable the firewall and see if it's working:
+	
 		sudo ufw enable
 		sudo ufw status
 		
