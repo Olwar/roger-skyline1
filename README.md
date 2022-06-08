@@ -300,28 +300,28 @@ Creating an SSL certificate and key -pair can be done in one line.
 	-out: This tells OpenSSL where to place the certificate that we are creating.
 	
 	
-	Fill out the prompts appropriately. The most important line is the one that requests the Common Name (e.g. server FQDN or YOUR name). 			You need to enter the domain name associated with your server or your server’s public IP address.
-	
-	then we are going to add "forward secrecy". Forward secrecy protects past sessions against future compromises of keys or passwords. By 			generating a unique session key for every session a user initiates, the compromise of a single session key will not affect any data 			other than that exchanged in the specific session protected by that particular key.
+Fill out the prompts appropriately. The most important line is the one that requests the Common Name (e.g. server FQDN or YOUR name). You need to enter the domain name associated with your server or your server’s public IP address.
+
+then we are going to add "forward secrecy". Forward secrecy protects past sessions against future compromises of keys or passwords. By generating a unique session key for every session a user initiates, the compromise of a single session key will not affect any data other than that exchanged in the specific session protected by that particular key.
 		
 		`sudo openssl dhparam -out /etc/nginx/dhparam.pem 4096`
 	
-	then we need to configure Nginx to use SSL
+then we need to configure Nginx to use SSL
 	
-	Let's create a new configuration Nginx snippet to tell Nginx where SSL certificate and key are
+Let's create a new configuration Nginx snippet to tell Nginx where SSL certificate and key are
 	
 		`sudo vim /etc/nginx/snippets/self-signed.conf`
 		
-	add this there:
+add this there:
 	
 		ssl_certificate /etc/ssl/certs/nginx-selfsigned.crt;
 		ssl_certificate_key /etc/ssl/private/nginx-selfsigned.key;
 	
-	Then we will enhance our SSL's security with another conf snippet
+Then we will enhance our SSL's security with another conf snippet
 	
 		`sudo vim /etc/nginx/snippets/ssl-params.conf`
 	
-	copy this there:
+copy this there:
 	
 		ssl_protocols TLSv1.2;
 		ssl_prefer_server_ciphers on;
@@ -342,22 +342,22 @@ Creating an SSL certificate and key -pair can be done in one line.
 		add_header X-Content-Type-Options nosniff;
 		add_header X-XSS-Protection "1; mode=block";
 	
-	for DNS resolver for upstream requests we chose Google's ip. Meaning that if somebody wants to see what's "after" our server, it gets redirected to google.
-	the lines commented out protects from certain attacks but narrows usability.
+for DNS resolver for upstream requests we chose Google's ip. Meaning that if somebody wants to see what's "after" our server, it gets redirected to google.
+the lines commented out protects from certain attacks but narrows usability.
 	
-	Now let's enable SSL in Nginx
+Now let's enable SSL in Nginx
 	
 	backup your default nginx-conf `sudo cp /etc/nginx/sites-available/default /etc/nginx/sites-available/default.bak`
 	
-	we will modify that default file. We will modify the existing server block to serve SSL traffic on port 443, and then create a new server block to respond on port 80 and automatically redirect traffic to port 443.
+we will modify that default file. We will modify the existing server block to serve SSL traffic on port 443, and then create a new server block to respond on port 80 and automatically redirect traffic to port 443.
 	
-	so change listen <your-static-ip>:80 default_server; to
+so change listen <your-static-ip>:80 default_server; to
 	
 		listen 10.11.247.17:443 ssl;
 	   	include snippets/self-signed.conf;
   		include snippets/ssl-params.conf;
 	
-	then add another block after the closing }
+then add another block after the closing }
 	
 		server {
 		    listen <your-static-ip>:80;
