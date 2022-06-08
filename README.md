@@ -3,6 +3,7 @@
 
 1. You must create a non-root user to connect to the machine and work.
 	login as root
+	
 		su
 
 	install sudo and vim
